@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم شاشات سبأ | SabaPost</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+   
+   
+</head>
+<body>
+
+<div class="app-container">
+    
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-tv"></i> <span>SabaPost</span>
+        </div>
+        <ul class="nav-links">
+            <li class="active" id="tab-dashboard"><a href="#" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i> لوحة القيادة</a></li>
+            
+            <li id="tab-screens"><a href="#" onclick="switchTab('screens')"><i class="fa-solid fa-desktop"></i> إدارة الشاشات</a></li>
+            
+            <li id="tab-content"><a href="#" onclick="switchTab('content')"><i class="fa-solid fa-photo-film"></i> إدارة المحتوى</a></li>
+            <li id="tab-settings"><a href="#" onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</a></li>
+        </ul>
+        <div class="sidebar-footer"><i class="fa-solid fa-user-shield"></i> لوحة المشرف</div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <h2 id="pageTitle">لوحة القيادة الرئيسية</h2>
+            <div class="user-info"><span id="clock" style="font-weight: bold; color: var(--primary);"></span></div>
+        </header>
+
+        <div id="view-dashboard" class="view-section">
+            <!-- احصائيات الشاشات  -->
+                <div class="load-stats-here"></div>
+
+                <!--  -->
+            <div class="dashboard-grid">
+                
+                <div class="center-panel">
+                    <div class="card">
+                        <div class="card-header flex-between">
+                            <h3><i class="fa-solid fa-network-wired"></i> نظرة عامة على الشاشات</h3>
+                            <button class="btn btn-primary" onclick="switchTab('screens')" style="padding: 5px 10px; font-size: 12px;">إدارة الكل</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="clean-table">
+                                <thead><tr><th>ID الجهاز</th><th>حالة الاتصال</th><th>التصريح</th><th>حالة العرض</th></tr></thead>
+                                <tbody id="screensList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- شريط الاخبار-->
+                <div class="side-panel">
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3><i class="fa-solid fa-bullhorn"></i> التحكم بشريط الأخبار</h3>
+            <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                <input type="checkbox" id="tickerToggle" onchange="toggleTickerVisibility('dashboard')">
+                <span class="slider"></span>
+            </label>
+        </div>
+        
+        <div class="form-group">
+            <textarea id="newsInput" rows="3" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+        </div>
+        
+        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div class="form-group">
+                <label style="font-size: 11px; font-weight: bold;">لون الخلفية</label>
+                <input type="color" id="tickerBgColor" value="#000000" style="width: 100%; height: 35px; cursor: pointer; border: none; padding: 0;">
+            </div>
+            <div class="form-group">
+                <label style="font-size: 11px; font-weight: bold;">لون النص</label>
+                <input type="color" id="tickerTextColor" value="#ffffff" style="width: 100%; height: 35px; cursor: pointer; border: none; padding: 0;">
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label style="font-size: 11px; font-weight: bold;">سرعة الحركة (أقل = أسرع)</label>
+                <input type="number" id="tickerSpeed" value="50" min="10" max="200" style="padding: 8px;">
+            </div>
+        </div>
+
+        <button class="btn btn-warning btn-block" onclick="updateAdvancedTicker()"><i class="fa-solid fa-satellite-dish"></i> تحديث وبث للشاشات</button>
+    </div>
+</div>
+            </div>
+        </div>
+
+        <div id="view-screens" class="view-section" style="display: none;">
+            <!-- احصائيات الشاشات-->
+            <div class="load-stats-here"></div>
+
+            <div class="card mt-20">
+                <div class="card-header flex-between">
+                    <h3><i class="fa-solid fa-server"></i> التحكم المركزي بالأجهزة</h3>
+                    <button class="btn btn-primary" onclick="fetchScreens()"><i class="fa-solid fa-rotate-right"></i> تحديث</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>معرف الشاشة (ID)</th>
+                                <th>عنوان IP</th>
+                                <th>التصريح</th>
+                                <th>العرض الحالي</th>
+                                <th>آخر استجابة (Ping)</th>
+                                <th>إجراءات الإدارة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailedScreensList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-content" class="view-section" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="center-panel">
+                    <div class="card">
+                        <div class="card-header"><h3><i class="fa-solid fa-cloud-arrow-up"></i> رفع محتوى جديد للمكتبة</h3></div>
+                        <div class="drag-drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p id="fileNameDisplay">اسحب الملف هنا أو <span>اضغط للاستعراض</span></p>
+                            <input type="file" id="fileInput" accept="image/*,video/*" hidden>
+                        </div>
+                        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                            <div class="form-group"><label>نوع المحتوى</label><select id="fileType"><option value="image">صورة</option><option value="video">فيديو</option></select></div>
+                            <div class="form-group"><label>مدة العرض</label><input type="number" id="duration" value="10000"></div>
+                            <div class="form-group">
+                                <label style="color: #2e7d32; font-weight: bold;"><i class="fa-solid fa-calendar-check"></i> يبدأ العرض في:</label>
+                                <input type="datetime-local" id="startsAt" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="color: #e53935; font-weight: bold;"><i class="fa-regular fa-clock"></i> ينتهي العرض في:</label>
+                                <input type="datetime-local" id="expiresAt" required>
+                            </div>
+                            
+                            <div class="form-group"><label>تخصيص الشاشة</label><select id="targetScreen"><option value="all">كل الشاشات</option></select></div>
+                        </div>
+                        <button class="btn btn-primary btn-block mt-10" onclick="uploadContent()"><i class="fa-solid fa-rocket"></i> رفع ونشر</button>
+                        
+                        <div class="progress-container" id="progressContainer" style="display: none; width: 100%; background-color: #e0e0e0; border-radius: 5px; margin-top: 15px; overflow: hidden;">
+                            <div id="progressBar" style="width: 0%; height: 10px; background-color: #2e7d32; transition: width 0.3s;"></div>
+                        </div>
+                        <div id="progressText" style="text-align: center; font-size: 12px; margin-top: 5px; font-weight: bold; color: var(--text-color); display: none;">0%</div>
+                        
+                        <div id="uploadStatus" class="status-msg mt-10"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3><i class="fa-solid fa-photo-film"></i> مكتبة الوسائط</h3></div>
+                        <div class="media-grid" id="mediaGallery"></div>
+                    </div>
+                </div>
+                <div class="side-panel">
+                    <div class="card sticky-card">
+                        <div class="card-header"><h3><i class="fa-solid fa-display"></i> المعاينة المباشرة</h3></div>
+                        <div class="preview-container" id="previewContainer">
+                            <div class="preview-placeholder" id="previewPlaceholder"><i class="fa-solid fa-clapperboard"></i><p>اختر ملفاً للعرض</p></div>
+                            <img id="imagePreview" src="" style="display: none;">
+                            <video id="videoPreview" src="" controls style="display: none;" muted></video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- d-->
+         <div id="view-settings" class="view-section" style="display: none;">
+        
+            <div class="dashboard-grid">
+                
+                <div class="center-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-palette"></i> هوية ومظهر لوحة التحكم (Branding)</h3>
+                        </div>
+                        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>اسم النظام (يظهر في القائمة العلوية والجانبية)</label>
+                                <input type="text" id="systemName" value="SabaPost">
+                            </div>
+                            <div class="form-group">
+                                <label>اللون الرئيسي (للأزرار)</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="color" id="primaryColor" value="#5c6bc0" style="width: 50px; padding: 0; cursor: pointer;">
+                                    <input type="text" id="primaryColorText" value="#5c6bc0" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>لون القائمة الجانبية</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="color" id="sidebarColor" value="#2b2b44" style="width: 50px; padding: 0; cursor: pointer;">
+                                    <input type="text" id="sidebarColorText" value="#2b2b44" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>لون خلفية النظام</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="color" id="bgColor" value="#f4f7fa" style="width: 50px; padding: 0; cursor: pointer;">
+                                    <input type="text" id="bgColorText" value="#f4f7fa" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>لون خلفية الكروت</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="color" id="cardBgColor" value="#ffffff" style="width: 50px; padding: 0; cursor: pointer;">
+                                    <input type="text" id="cardBgColorText" value="#ffffff" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>لون النصوص العام</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="color" id="textColor" value="#333333" style="width: 50px; padding: 0; cursor: pointer;">
+                                    <input type="text" id="textColorText" value="#333333" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-10" onclick="saveThemeSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ وتطبيق المظهر</button>
+                    </div>
+
+                    <div class="card mt-20">
+                        <div class="card-header flex-between">
+                            <h3><i class="fa-solid fa-newspaper"></i> إعدادات شريط الأخبار (على الشاشات)</h3>
+                            <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                                <input type="checkbox" id="settingsTickerToggle" onchange="toggleTickerVisibility('settings')">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>نص الشريط العاجل</label>
+                            <textarea id="settingsNewsInput" rows="2" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+                        </div>
+                        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                            <div class="form-group">
+                                <label>لون خلفية الشريط</label>
+                                <input type="color" id="settingsTickerBgColor" value="#000000" style="width: 100%; height: 40px; cursor: pointer;">
+                            </div>
+                            <div class="form-group">
+                                <label>لون النص</label>
+                                <input type="color" id="settingsTickerTextColor" value="#ffffff" style="width: 100%; height: 40px; cursor: pointer;">
+                            </div>
+                            <div class="form-group">
+                                <label>سرعة حركة الشريط</label>
+                                <input type="number" id="settingsTickerSpeed" value="50" min="10" max="200">
+                            </div>
+                        </div>
+                        <button class="btn btn-warning mt-10" onclick="saveAdvancedTicker()"><i class="fa-solid fa-satellite-dish"></i> بث التحديثات للشاشات</button>
+                    </div>
+                </div>
+
+                <div class="side-panel">
+                    <div class="card sticky-card">
+                        <div class="card-header">
+                            <h3><i class="fa-regular fa-image"></i> الشعار الافتراضي (Fallback)</h3>
+                        </div>
+                        <div class="preview-container" style="height: 200px; margin-bottom: 15px; border: 2px dashed #ccc;">
+                            <img id="currentFallbackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                            <div id="fallbackPlaceholder" class="preview-placeholder">
+                                <i class="fa-solid fa-image" style="font-size: 40px; color: #ccc;"></i>
+                                <p>لم يتم تعيين شعار</p>
+                            </div>
+                        </div>
+                        <input type="file" id="fallbackInput" accept="image/*" class="file-input" style="margin-bottom: 15px;">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="uploadFallbackImage()">تحديث</button>
+                            <button class="btn btn-danger" style="flex: 1; background-color: #d32f2f;" onclick="deleteFallbackImage()"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div id="fallbackStatus" class="status-msg"></div>
+                    </div>
+                </div>
+
+            </div>
+        
+            <!--
+            -->
+           
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.1/dist/tus.min.js"></script>
+
+<script src="script.js"></script>
+
+<script>
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG'); }, 1000);
+</script>
+</body>
+</html>
