@@ -393,3 +393,51 @@ input:checked + .slider::before { transform: translateX(20px); }
         font-size: 20px;
     }
 }
+/* ==========================================
+   📱 تصميم زر القائمة وحركتها (Mobile Sidebar)
+   ========================================== */
+
+/* إخفاء زر القائمة والتظليل في شاشات الكمبيوتر */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 0;
+}
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 99;
+    backdrop-filter: blur(2px); /* تأثير ضبابي احترافي */
+}
+
+/* التجاوب مع شاشات الجوال */
+@media (max-width: 768px) {
+    /* إظهار زر القائمة */
+    .mobile-menu-btn { display: block; }
+    
+    /* إلغاء هامش المحتوى (لأن القائمة ستكون مخفية) */
+    .main-content { margin-right: 0 !important; }
+
+    /* إخفاء القائمة وسحبها لليمين خارج الشاشة */
+    .sidebar {
+        width: 260px !important; /* إرجاع العرض الطبيعي لتكون مقروءة */
+        transform: translateX(100%); /* إزاحتها يميناً 100% */
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100; /* لتكون فوق كل شيء */
+    }
+
+    /* إرجاع النصوص والأيقونات داخل القائمة (لأننا أخفيناها في التابلت) */
+    .sidebar span, .sidebar-footer { display: block !important; }
+    .nav-links li a { justify-content: flex-start !important; padding: 15px 25px !important; }
+
+    /* 🟢 الكلاسات التي سيضيفها الجافاسكربت عند الضغط على الزر */
+    .sidebar.active { transform: translateX(0); /* إدخال القائمة للشاشة */ }
+    .sidebar-overlay.active { display: block; /* إظهار التظليل */ }
+}
+
