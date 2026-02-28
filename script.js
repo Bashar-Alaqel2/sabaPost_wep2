@@ -62,8 +62,20 @@ function switchTab(tabName) {
         'settings': 'إعدادات النظام'
     };
     document.getElementById('pageTitle').innerText = titles[tabName];
+    // إغلاق القائمة الجانبية تلقائياً في الموبايل بعد اختيار أي قسم
+    if (window.innerWidth <= 768) {
+        document.querySelector('.sidebar').classList.remove('active');
+        const overlay = document.getElementById('sidebar-overlay');
+        if(overlay) overlay.classList.remove('active');
+    }
 }
-
+// 📱 دالة فتح وإغلاق القائمة الجانبية (للهواتف)
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if(sidebar) sidebar.classList.toggle('active');
+    if(overlay) overlay.classList.toggle('active');
+}
 // 🖥️ 2. رسم الشاشات وحساب الإحصائيات (النسخة المدمجة والشاملة)
 function renderScreens(screens) {
     // جلب الجداول (الجدول المختصر في الرئيسية، والجدول المفصل في إدارة الشاشات)
