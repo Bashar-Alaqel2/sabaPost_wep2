@@ -294,4 +294,102 @@ input:checked + .slider::before { transform: translateX(20px); }
     display: flex; justify-content: center; align-items: center; font-size: 24px;
 }
 .stat-info h4 { margin: 0; font-size: 28px; color: var(--text-dark); }
+
 .stat-info span { color: #888; font-size: 14px; font-weight: 600; }
+
+/* ==========================================
+   📱 تصميم متجاوب لشاشات الهواتف (Mobile Responsive)
+   ========================================== */
+@media (max-width: 768px) {
+    /* 1. ضبط مساحة العمل الأساسية */
+    .main-content {
+        margin-right: 60px; /* ترك مساحة للقائمة المصغرة */
+        padding: 15px 10px; /* تقليل الحواف الجانبية */
+    }
+
+    /* 2. الشريط العلوي (العنوان والساعة) */
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .top-bar h2 {
+        font-size: 20px;
+    }
+
+    /* 3. كسر الأعمدة المزدوجة لتصبح عموداً واحداً (مهم جداً للإعدادات) */
+    .dashboard-grid,
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    /* كسر الأنماط المدمجة (Inline Styles) في HTML الخاصة بشبكة الإعدادات */
+    .settings-grid {
+        grid-template-columns: 1fr !important; 
+        gap: 10px !important;
+    }
+    
+    /* جعل العناصر الممتدة لعمودين تأخذ مساراً واحداً */
+    .form-group[style*="grid-column"] {
+        grid-column: span 1 !important;
+    }
+
+    /* 4. ترتيب ترويسات الكروت التي تحتوي على أزرار */
+    .card-header.flex-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .card-header.flex-between .btn {
+        width: 100%; /* زر التحديث والإدارة يأخذ عرض الشاشة */
+    }
+
+    /* 5. ضبط منطقة الرفع (السحب والإفلات) */
+    .drag-drop-zone {
+        padding: 25px 10px;
+    }
+    .drag-drop-zone i {
+        font-size: 35px;
+    }
+
+    /* 6. منع الجداول من تشويه الشاشة (تفعيل التمرير الأفقي) */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* تمرير ناعم في الآيفون */
+        border: 1px solid var(--border);
+        border-radius: 5px;
+    }
+    
+    .clean-table th, .clean-table td {
+        white-space: nowrap; /* منع النص من الانكسار وتشويه الجدول */
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    /* 7. الإحصائيات والكروت */
+    .card, .stat-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    /* 8. مكتبة الوسائط */
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* تصغير حجم كرت الوسائط ليناسب الهاتف */
+    }
+}
+
+/* ==========================================
+   📱 تصميم للهواتف الصغيرة جداً (أقل من 480px)
+   ========================================== */
+@media (max-width: 480px) {
+    .stat-info h4 {
+        font-size: 22px; /* تصغير أرقام الإحصائيات */
+    }
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
