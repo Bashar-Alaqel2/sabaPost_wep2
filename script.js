@@ -126,7 +126,7 @@ function renderScreens(screens) {
 
         const lastPing = new Date(s.last_ping);
         const diffMinutes = Math.abs(now - lastPing) / (1000 * 60);
-        const isOnline = diffMinutes <= 5; 
+        const isOnline = diffMinutes <= 1; 
 
         if (isOnline) onlineCount++; else offlineCount++;
 
